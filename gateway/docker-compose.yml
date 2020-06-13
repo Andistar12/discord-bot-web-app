@@ -1,0 +1,13 @@
+# This docker compose file launches solely the frontend image in the same folder
+
+version: "3"
+
+services:
+    gateway:
+        container_name: gateway
+        build: .
+        ports:
+         - "1357:5000"
+        environment:
+         - "CONFIG_LOC: ./config.json"
+        command: python3 ./gateway.py
