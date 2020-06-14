@@ -7,6 +7,7 @@ COPY . /app/
 WORKDIR /app/
 RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 CMD ["./main"]
+#CMD ["go", "test"]
 
 FROM alpine:latest as prod
 WORKDIR /app
