@@ -1,13 +1,14 @@
-# This docker compose file launches solely the frontend image in the same folder
+# This docker compose file is a dev docker compose that only launches only 
+# the gateway service alone
 
-version: "3"
+version: "3.4"
 
 services:
     gateway:
         container_name: gateway
         build: .
-        ports:
-         - "1357:5000"
         environment:
-         - "CONFIG_LOC: ./config.json"
+         - CONFIG_LOC=./config.json
+        volumes:
+         - ../config.json:/app/config.json
         command: python3 ./gateway.py

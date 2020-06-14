@@ -5,13 +5,13 @@ import re
 import logging
 import discord
 import aiohttp
-import asyncio
-import flask
+import requests
+import async_timeout
 
 # Load config file. Requires one env param "CONFIG_LOC"
 try:
     CONFIG_LOC = os.environ.get("CONFIG_LOC", "/run/secret/config.json")
-    cfgfile = open("./config.json")
+    cfgfile = open(CONFIG_LOC)
     config = json.load(cfgfile)
 except Exception as e:
     logging.critical("Error occurred opening config file config.json: " + str(e))
@@ -35,86 +35,61 @@ if BACKEND_ADDR_PORT is None:
     logging.critical("Error: backend address port is null")
     sys.exit(1)
 
-# Create flask client
-app = flask.Flask(__name__)
-app.logger.setLevel(logging.DEBUG)
-
-# Create discord client
+# Create discord client, setup logging
 client = discord.Client()
 client.bot_token = BOT_TOKEN
 client.command_prefix = COMMAND_PREFIX
 client.backend_addr = BACKEND_ADDR
 client.backend_addr_port = BACKEND_ADDR_PORT
-client.logger = app.logger
+client.logger = logging.getLogger("discord-bot")
+logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+logging.getLogger().setLevel(logging.DEBUG)
+
+# Create aiohttp session
+session = aiohttp.ClientSession()
 
 # On ready - changes bot info as config requests
 @client.event
 async def on_ready():
     client.logger.info("Logged in as %s (ID %s)", client.user.name, client.user.id)
 
-
-# General on message received, relayed to other commands
+# On message received, calls the backend
 @client.event
 async def on_message(message):
     if message.author.id != client.user.id and not message.author.bot:
         # Ignore messages from self and from bots
         if message.content.startswith(client.command_prefix):
+            client.logger.debug("Command detected: " + message.content)
             # Starts with prefix, process as command
 
-            # Strip command prefix
+            # Strip command prefix, split arguments, form payload
             content = message.content[1::]
-            # TODO verify that this actually splits correctly
             content = re.split(r'''((?:[^ "']|"[^"]*"|'[^']*')+)''', content)[1::2]
-            command = content[1]
+            command = content[0]
             arguments = content[1:]
-            url = "http://" + client.BACKEND_ADDR + ":" + client.BACKEND_ADDR_PORT + "/command/" + command
+            url = "http://" + client.backend_addr + ":" + client.backend_addr_port + "/command/" + command.lower()
             # Pass to backend
             payload = {
-                "command": content[1],
-                "arguments": content[1:],
+                "command": command,
+                "arguments": arguments,
                 "user_id": message.author.id
             }
-            client.logger.debug("Sending command request to backend: " + str(payload))
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, params=payload) as r:
-                    if r.status == 200:
-                        js = await r.json()
-                        reply = js.get("response", None)
-                        client.logger.debug("Received response: " + reply)
-                        if isinstance(reply, str) and reply != "":
-                            try:
-                                await self.client.send_message(message.channel, reply)
-                            except discord.DiscordException as e:
-                                logger.info("Error occurred sending message: " + str(e))
 
-@app.route("/bot/info")
-def get_info():
-    payload = {
-        "username": etc,
-        "command_prefix": etc
-    }
-    return flask.jsonify(payload), 200
-
-@app.route("/bot/update", methods=["POST"])
-def set_info():
-    return flask.jsonify({}), 501 # TODO
-
-def main():
-    loop = asyncio.get_event_loop()
-    client.logger.debug("Initiating discord bot")
-    try:
-        loop.run_until_complete(client.start(client.bot_token, bot=True))
-    except Exception as e:
-        client.logger.critical("Bot failed to start: " + str(e))
-        sys.exit(1)
-    client.logger.debug("Initiating flask api")
-    app.run(port=5000, host="0.0.0.0")
-    try:
-        loop.run_until_complete(client.logout())
-    except Exception as e:
-        client.logger.warning("Bot failed to logout: " + str(e))
-        sys.exit(1)
-    loop.close()
+            client.logger.info(f"Sending command request to {url}: {payload}")
+            async with session.post(url, json=payload) as r:
+                client.logger.info("Response received")
+                if r.status == 200:
+                    js = await r.json()
+                    reply = js.get("response", None)
+                    client.logger.info("Received response: " + reply)
+                    if isinstance(reply, str) and reply != "":
+                        try:
+                            await message.channel.send(reply)
+                        except discord.DiscordException as e:
+                            logger.info("Error occurred sending message: " + str(e))
+                else:
+                    client.logger.info(f"Got back response code {r.status}")
 
 if __name__ == "__main__":
-    main()
+    client.logger.debug("Initiating discord connection")
+    client.run(client.bot_token, bot=True)
