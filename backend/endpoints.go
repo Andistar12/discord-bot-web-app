@@ -52,7 +52,6 @@ func CommandRepeat(ctx *gin.Context) {
     if err != nil {
         log.Errorf("Error occurred parsing paramters")
         log.Error(err)
-        ctx.JSON(http.StatusInternalServerError, gin.H{})
     } else {
         reply := strings.Join(params.Arguments, " ")
         if reply == "" {
