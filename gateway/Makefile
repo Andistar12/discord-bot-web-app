@@ -30,7 +30,7 @@ run: # Spins up a container
 	docker run -it --name $(CONTAINER_NAME) --log-driver local \
 		-e CONFIG_LOC=$(CONFIG_LOC) \
 		-v $(realpath $(CONFIG_LOC_EXT)):$(CONFIG_LOC) \
-		$(IMAGE_NAME)
+		$(IMAGE_NAME) || true
 
 clean: # Stops the container
 	# Surpress error if not started
