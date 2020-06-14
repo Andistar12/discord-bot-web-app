@@ -5,7 +5,6 @@ import re
 import logging
 import discord
 import aiohttp
-import requests
 import async_timeout
 
 # Load config file. Requires one env param "CONFIG_LOC"
@@ -86,7 +85,7 @@ async def on_message(message):
                         try:
                             await message.channel.send(reply)
                         except discord.DiscordException as e:
-                            logger.info("Error occurred sending message: " + str(e))
+                            client.logger.error("Error occurred sending message: " + str(e))
                 else:
                     client.logger.info(f"Got back response code {r.status}")
 
