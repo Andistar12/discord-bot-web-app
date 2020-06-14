@@ -15,8 +15,6 @@ services:
         container_name: backend
         environment:
             - CONFIG_LOC=/run/secret/config.json
-            - PORT=2468
-            - GIN_MODE=test
         ports:
             - 2468:2468
         volumes:
