@@ -1,6 +1,7 @@
 package main
 
 import (
+    "bytes"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -110,14 +111,15 @@ func TestCommandPong(t *testing.T) {
 // Tests that the command "repeat" properly returns a message in "response"
 func TestCommandRepeat(t *testing.T) {
 
-    var payload CommandRequest = {
+    payload := &CommandRequest{
         Command: "repeat",
-        Arguments: ["id?"],
-        UserID: 0
+        Arguments: []string {"id?"},
+        UserID: 0,
     }
+    body, _ := json.Marshal(payload)
 
     // Fetch response
-    req, _ := http.NewRequest("POST", "/command/repeat", payload)
+    req, _ := http.NewRequest("POST", "/command/repeat", bytes.NewBuffer(body))
     w := getHTTPResponse(req)
 
     // Check status == 200 
