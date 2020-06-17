@@ -20,9 +20,11 @@ func InitializeRoutes(app *gin.Engine) {
 // Arguments is a string array of each arguments. Each string may or may not have spaces
 // UserID is the user snowflake of the sender of the command
 type CommandRequest struct {
-    Command string      `json:"command"`
-    Arguments []string  `json:"arguments"`
-    UserID int          `json:"user_id"`
+    Command string          `json:"command"`
+    Arguments []string      `json:"arguments"`
+    UserID int              `json:"user_id"`
+    MessageID int           `json:"message_id"`
+    MessageChannelID int    `json:"message_channel_id"`
 }
 
 // Returns as "command" an array of every available command

@@ -71,7 +71,9 @@ async def on_message(message):
             payload = {
                 "command": command,
                 "arguments": arguments,
-                "user_id": message.author.id
+                "user_id": message.author.id,
+                "message_id": message.id,
+                "message_channel_id": message.channel.id
             }
 
             client.logger.info(f"Sending command request to {url}: {payload}")
