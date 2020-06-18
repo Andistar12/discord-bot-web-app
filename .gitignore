@@ -1,1 +1,3 @@
 config.json
+**.pyc
+**_pycache__
