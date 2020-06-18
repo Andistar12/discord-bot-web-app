@@ -5,7 +5,7 @@ services:
         build: gateway/
         container_name: gateway
         environment:
-            - CONFIG_LOC=/run/secret/config.json
+            - CONFIG_LOC=/run/secrets/config
         secrets:
             - config
     backend:
@@ -14,7 +14,7 @@ services:
             target: dev
         container_name: backend
         environment:
-            - CONFIG_LOC=/run/secret/config.json
+            - CONFIG_LOC=/run/secrets/config
         ports:
             - 2468:2468
         secrets:
