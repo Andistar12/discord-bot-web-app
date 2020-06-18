@@ -22,7 +22,7 @@ CONFIG_LOC_EXT=../config.json
 all: clean build run
 
 build: # Builds the docker image
-	docker build -t $(IMAGE_NAME) .
+	docker build -t $(IMAGE_NAME) --target dev .
 	
 run: # Spins up a container 
 	# Supress error if not preexisting
