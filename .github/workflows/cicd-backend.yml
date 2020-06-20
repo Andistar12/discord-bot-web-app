@@ -1,4 +1,4 @@
-name: Build and push backend
+name: backend
 
 on:
     push:
@@ -15,8 +15,7 @@ jobs:
             - name: "Install config"
               env:
                 CONFIG_FILE: ${{ secrets.CONFIG_FILE }}
-              run: |
-                echo ${{ secrets.CONFIG_FILE }} > config.json
+              run: echo ${{ secrets.CONFIG_FILE }} > config.json
 
             - name: "Run unit tests"
               run: make --directory backend/ test
