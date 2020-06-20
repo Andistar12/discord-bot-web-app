@@ -13,6 +13,8 @@ jobs:
               uses: actions/checkout@master
 
             - name: "Install config"
+              env:
+                CONFIG_FILE: ${{ secrets.CONFIG_FILE }}
               run: |
                 echo ${{ secrets.CONFIG_FILE }} > config.json
 
@@ -41,7 +43,7 @@ jobs:
               with:
                 webhook: ${{ secrets.DISCORD_WEBHOOK }}
                 status: ${{ job.status }}
-                title: "build and push backend"
+                title: "build and push backend image"
                 nofail: true
                 nodetail: false
                 color: 0x2d7daa
