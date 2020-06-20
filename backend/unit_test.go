@@ -67,7 +67,7 @@ func TestCommandPing(t *testing.T) {
     }
 
     // Check response good
-    if response.Response != "fail!" {
+    if response.Response != "Pong!" {
         t.Errorf("Wrong output. Expected: %v. Got: %v\n", "Pong!", response.Response)
     }
 }
