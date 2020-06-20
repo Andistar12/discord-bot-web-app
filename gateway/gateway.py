@@ -33,16 +33,22 @@ BACKEND_ADDR_PORT = config.get("backend_addr_port", None)
 if BACKEND_ADDR_PORT is None:
     logging.critical("Error: backend address port is null")
     sys.exit(1)
+LOGGING_LEVEL = config.get("target", None)
 
-# Create discord client, setup logging
+# Create discord client
 client = discord.Client()
 client.bot_token = BOT_TOKEN
 client.command_prefix = COMMAND_PREFIX
 client.backend_addr = BACKEND_ADDR
 client.backend_addr_port = BACKEND_ADDR_PORT
-client.logger = logging.getLogger("discord-bot")
+
+# Setup logging
+client.logger = logging.getLogger("gateway")
 logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
-logging.getLogger().setLevel(logging.DEBUG)
+if isinstance(LOGGING_LEVEL, str) and LOGGING_LEVEL.startswith("prod"):
+    logging.getLogger().setLevel(logging.INFO)
+else:
+    logging.getLogger.setLevel(logging.DEBUG)
 
 # Create aiohttp session
 session = aiohttp.ClientSession()
@@ -76,13 +82,13 @@ async def on_message(message):
                 "message_channel_id": message.channel.id
             }
 
-            client.logger.info(f"Sending command request to {url}: {payload}")
+            client.logger.debug(f"Sending command request to {url}: {payload}")
             async with session.post(url, json=payload) as r:
                 client.logger.info("Response received")
                 if r.status == 200:
                     js = await r.json()
                     reply = js.get("response", None)
-                    client.logger.info("Received response: " + reply)
+                    client.logger.debug("Received response: " + reply)
                     if isinstance(reply, str) and reply != "":
                         try:
                             await message.channel.send(reply)
@@ -92,5 +98,5 @@ async def on_message(message):
                     client.logger.info(f"Got back response code {r.status}")
 
 if __name__ == "__main__":
-    client.logger.debug("Initiating discord connection")
+    client.logger.info("Initiating discord connection")
     client.run(client.bot_token, bot=True)
