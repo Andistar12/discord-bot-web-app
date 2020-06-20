@@ -1,0 +1,49 @@
+name: Build and push backend
+
+on:
+    push:
+        paths:
+            - "backend/**"
+
+jobs:
+    build-backend:
+        runs-on: ubuntu-20.04
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@master
+
+            - name: "Install config"
+              run: |
+                echo ${{ secrets.CONFIG_FILE }} > config.json
+
+            - name: "Run unit tests"
+              run: make --directory backend/ test
+
+            - name: "Build prod image"
+              run: docker build -t ${{ secrets.BACKEND_PROD_TAG }} --target prod backend/
+            
+            - name: "Login to google cloud"
+              uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+              with:
+                version: "270.0.0"
+                service_account_email: ${{ secrets.GCLOUD_EMAIL }}
+                service_account_key: ${{ secrets.GCLOUD_KEY }}
+            
+            - name: "Login to docker"
+              run: gcloud auth configure-docker
+            
+            - name: "Push to docker registry"
+              run: docker push ${{ secrets.BACKEND_PROD_TAG }}
+
+            - name: "Notify discord"
+              uses: sarisia/actions-status-discord@v1
+              if: ${{ always() }}
+              with:
+                webhook: ${{ secrets.DISCORD_WEBHOOK }}
+                status: ${{ job.status }}
+                title: "build and push backend"
+                nofail: true
+                nodetail: false
+                color: 0x2d7daa
+                username: GitHub Actions
+                avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
