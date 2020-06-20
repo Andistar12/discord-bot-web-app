@@ -1,13 +1,13 @@
 # This Dockerfile is used to build the app
-FROM golang:latest as dev
-RUN go get -u github.com/gin-gonic/gin
-RUN go get -u github.com/codegangsta/gin
-RUN go get -u github.com/sirupsen/logrus
-COPY . /app/
-WORKDIR /app/
+FROM golang:1.14.4 as dev
+RUN mkdir /go/src/backend
+WORKDIR /go/src/backend
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 CMD ["./main"]
-#CMD ["go", "test"]
 
 FROM alpine:latest as prod
 WORKDIR /app
