@@ -4,6 +4,7 @@ on:
     push:
         paths:
             - "backend/**"
+            - ".github/workflows/cicd-backend.yml"
 
 jobs:
     build-backend:
@@ -15,7 +16,7 @@ jobs:
             - name: "Install config"
               env:
                 CONFIG_FILE: ${{ secrets.CONFIG_FILE }}
-              run: echo ${{ secrets.CONFIG_FILE }} > config.json
+              run: echo "$CONFIG_FILE" > config.json
 
             - name: "Run unit tests"
               run: make --directory backend/ test
