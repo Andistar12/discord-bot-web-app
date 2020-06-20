@@ -11,5 +11,5 @@ CMD ["./main"]
 
 FROM alpine:latest as prod
 WORKDIR /app
-COPY --from=0 /app/main .
+COPY --from=0 /go/src/backend/main .
 CMD ["./main"]
