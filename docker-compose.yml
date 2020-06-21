@@ -2,7 +2,9 @@ version: '3.4'
 
 services:
     gateway:
-        build: gateway/
+        build: 
+            context: gateway/
+            target: dev
         container_name: gateway
         environment:
             - CONFIG_LOC=/run/secrets/config
