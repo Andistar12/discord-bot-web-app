@@ -1,0 +1,50 @@
+name: gateway
+
+on:
+    push:
+        paths:
+            - "gateway/**"
+            - ".github/workflows/cicd-gateway.yml"
+
+jobs:
+    build-gateway:
+        runs-on: ubuntu-latest
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v2
+
+            - name: "Install config"
+              env:
+                CONFIG_FILE: ${{ secrets.CONFIG_FILE }}
+              run: echo "$CONFIG_FILE" > config.json
+
+            - name: "Run unit tests"
+              run: make --directory gateway/ test
+
+            - name: "Build prod image"
+              run: docker build -t ${{ secrets.GATEWAY_PROD_TAG }} --target prod gateway/
+            
+            - name: "Login to google cloud"
+              uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+              with:
+                version: "270.0.0"
+                service_account_key: ${{ secrets.GCLOUD_KEY }}
+            
+            - name: "Login to docker"
+              run: gcloud auth configure-docker
+            
+            - name: "Push to docker registry"
+              run: docker push ${{ secrets.GATEWAY_PROD_TAG }}
+
+            - name: "Notify discord"
+              uses: sarisia/actions-status-discord@v1
+              if: ${{ always() }}
+              with:
+                webhook: ${{ secrets.DISCORD_WEBHOOK }}
+                status: ${{ job.status }}
+                title: "build and push gateway image"
+                nofail: true
+                nodetail: false
+                color: 0x2d7daa
+                username: GitHub Actions
+                avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
