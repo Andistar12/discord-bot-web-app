@@ -169,14 +169,17 @@ async def on_message(message):
             url = "http://" + client.backend_addr + ":"
             url += client.backend_addr_port + "/command/" + payload["command"]
             reply = await get_reply(url, payload)
-            if reply["response"] != "":
-                embed = reply["embed"]
+            response = reply["response"]
+            embed = None
+            try:
+                embed = 
+                embed = discord.Embed.from_dict(reply["embed"])
+            except Exception as e: # Ignore if unparsable
+                client.logger.debug(f"Error parsing embed: {e}")
+            if response != "" or embed is not None: # We have something to send
+                client.logger.debug(f"Sending the following: response {response} embed {embed}")
                 try:
-                    embed = discord.Embed.from_dict(embed)
-                except Exception: # Ignore if unparsable
-                    embed = None 
-                try:
-                    await message.channel.send(reply["response"], embed=embed)
+                    await message.channel.send(response, embed=embed)
                 except discord.DiscordException as e:
                     client.logger.error("Error occurred sending message: " + str(e))
 
