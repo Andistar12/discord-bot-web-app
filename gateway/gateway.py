@@ -1,7 +1,7 @@
 import json
 import sys
 import os
-import re
+import shlex
 import logging
 import time
 import discord
@@ -94,7 +94,7 @@ async def generate_payload(message):
         content = message
     if content.startswith(client.command_prefix):
         content = content[1::] 
-        content = re.split(r'''((?:[^ "']|"[^"]*"|'[^']*')+)''', content)[1::2]
+        content = shlex.split(content)
         payload = {
             "command": content[0].lower(),
             "arguments": content[1:],
@@ -172,7 +172,6 @@ async def on_message(message):
             response = reply["response"]
             embed = None
             try:
-                embed = 
                 embed = discord.Embed.from_dict(reply["embed"])
             except Exception as e: # Ignore if unparsable
                 client.logger.debug(f"Error parsing embed: {e}")
