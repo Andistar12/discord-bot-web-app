@@ -5,7 +5,7 @@ services:
         build: 
             context: gateway/
             target: dev
-        container_name: gateway
+        container_name: dc-gateway
         environment:
             - CONFIG_LOC=/run/secrets/config
         volumes:
@@ -14,7 +14,7 @@ services:
         build: 
             context: backend/
             target: dev
-        container_name: backend
+        container_name: dc-backend
         environment:
             - CONFIG_LOC=/run/secrets/config
         ports:
