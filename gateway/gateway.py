@@ -3,9 +3,9 @@ import sys
 import os
 import re
 import logging
+import time
 import discord
 import aiohttp
-import async_timeout
 
 # Load config file. Requires one env param "CONFIG_LOC"
 try:
@@ -43,59 +43,143 @@ client.backend_addr = BACKEND_ADDR
 client.backend_addr_port = BACKEND_ADDR_PORT
 
 # Setup logging
-client.logger = logging.getLogger("gateway")
-logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
+logFormat = logging.Formatter(
+    '[%(levelname)s] [%(name)s %(asctime)s] %(message)s')
+consoleHandler = logging.StreamHandler(sys.stdout)
 if isinstance(LOGGING_LEVEL, str) and LOGGING_LEVEL.startswith("prod"):
-    logging.getLogger().setLevel(logging.INFO)
+    consoleHandler.setLevel(logging.INFO)
 else:
-    logging.getLogger.setLevel(logging.DEBUG)
+    consoleHandler.setLevel(logging.DEBUG)
+consoleHandler.setFormatter(logFormat)
+logging.getLogger().addHandler(consoleHandler)
+logging.getLogger().setLevel(logging.DEBUG)
+client.logger = logging.getLogger("gateway")
 
-# Create aiohttp session
-session = aiohttp.ClientSession()
 
-# On ready - changes bot info as config requests
+async def generate_payload(message):
+    """
+    Generates a JSON-compatible payload to be sent to the backend
+    
+    The payload consists of six fields:
+     - command: string, the one-word command string alone without the command
+            prefix. The command is guaranteed to be in all lowercase letters
+     - arguments: string array, every additional argument following the command. 
+            This array will not include the command itself. Quoted substrings
+            will be preserved.
+     - user_id: long, the id of the user who sent the message
+     - message_id: long, the id of the message itself
+     - message_channel_id: long, the id of the message's channel
+     - is_private: boolean, whether the channel is a private message
+
+    For example, assuming the command prefix is '.', then the message content
+        .choice first_choice "second choice" thirdChoice
+    will generate the following fields in the payload:
+        command: "choice"
+        arguments: ["first_choice", "second choice", "thirdChoice"]
+
+    If the message is of type string instead of type discord.Message, then
+    the *_id fields and is_private field will be omitted
+
+    Input parameters:
+        message: a discord message received, or a raw string command
+    Return type:
+        dict: the payload generated (if message is a valid command)
+        None: no available payload (if message is not a valid command)
+    """
+    payload = None
+    content = ""
+    if isinstance(message, discord.Message):
+        content = message.content
+    elif isinstance(message, str):
+        content = message
+    if content.startswith(client.command_prefix):
+        content = content[1::] 
+        content = re.split(r'''((?:[^ "']|"[^"]*"|'[^']*')+)''', content)[1::2]
+        payload = {
+            "command": content[0].lower(),
+            "arguments": content[1:],
+        }
+        if isinstance(message, discord.Message):
+            payload["user_id"] = message.author.id
+            payload["message_id"] = message.id 
+            payload["message_channel_id"] = message.channel.id 
+            payload["is_private"] = isinstance(message.channel, discord.abc.PrivateChannel)
+        client.logger.debug(f"Built payload as {payload}")
+    return payload
+
+
+async def get_reply(url: str, payload: dict):
+    """
+    Gets the reply message from the URL for the given payload command
+
+    The return dict has two fields, both of which may be empty strings:
+     - response: string, the text response that should be sent
+     - embed: string, the embed JSON that should be sent
+
+    If the returned status code is not 200, response and embed will default to
+    be empty strings
+
+    The embed string should be a JSON-parsable string with fields as specified
+    in the Discord documentation about embeds: 
+    https://discord.com/developers/docs/resources/channel#embed-object
+
+    Input parameters:
+        url: string, the URL repsenting the backend to send to
+        payload: dict, the payload to POST to the URL
+    Return type:
+        dict: the response
+    """
+    reply = {
+        "response": "",
+        "embed": ""
+    }
+    client.logger.debug(f"Sending command request to {url}: {payload}")
+    try:
+        start = time.perf_counter()
+        async with client.aiohttp_session.post(url, json=payload) as r:
+            if r.status == 200:
+                js = await r.json()
+                delta = round((time.perf_counter() - start) * 1000, 2)
+                client.logger.info(f"Response received from backend in {delta} ms")
+                reply["response"] = js.get("response", "")
+                reply["embed"] = js.get("embed", "")
+                client.logger.debug(f"Received reply from backend: {reply}")
+            else:
+                delta = (time.perf_counter() - start) * 1000
+                client.logger.info(f"Got back response code {r.status} in {delta} ms")
+    except aiohttp.ClientConnectorError as e:
+        client.logger.warning("Could not connect to URL. Is it down?")
+    return reply
+
+
 @client.event
 async def on_ready():
+    """Fires when the bot is ready to process incoming messages"""
+    client.aiohttp_session = aiohttp.ClientSession() # Must be in an async func
     client.logger.info("Logged in as %s (ID %s)", client.user.name, client.user.id)
 
-# On message received, calls the backend
+
 @client.event
 async def on_message(message):
+    """Fires when any message is sent in a server the bot is in"""
     if message.author.id != client.user.id and not message.author.bot:
-        # Ignore messages from self and from bots
-        if message.content.startswith(client.command_prefix):
-            client.logger.debug("Command detected: " + message.content)
-            # Starts with prefix, process as command
+        payload = await generate_payload(message)
+        if payload is not None:
+            client.logger.debug("Command detected: " + payload["command"])
+            url = "http://" + client.backend_addr + ":"
+            url += client.backend_addr_port + "/command/" + payload["command"]
+            reply = await get_reply(url, payload)
+            if reply["response"] != "":
+                embed = reply["embed"]
+                try:
+                    embed = discord.Embed.from_dict(embed)
+                except Exception: # Ignore if unparsable
+                    embed = None 
+                try:
+                    await message.channel.send(reply["response"], embed=embed)
+                except discord.DiscordException as e:
+                    client.logger.error("Error occurred sending message: " + str(e))
 
-            # Strip command prefix, split arguments, form payload
-            content = message.content[1::]
-            content = re.split(r'''((?:[^ "']|"[^"]*"|'[^']*')+)''', content)[1::2]
-            command = content[0]
-            arguments = content[1:]
-            url = "http://" + client.backend_addr + ":" + client.backend_addr_port + "/command/" + command.lower()
-            # Pass to backend
-            payload = {
-                "command": command,
-                "arguments": arguments,
-                "user_id": message.author.id,
-                "message_id": message.id,
-                "message_channel_id": message.channel.id
-            }
-
-            client.logger.debug(f"Sending command request to {url}: {payload}")
-            async with session.post(url, json=payload) as r:
-                client.logger.info("Response received")
-                if r.status == 200:
-                    js = await r.json()
-                    reply = js.get("response", None)
-                    client.logger.debug("Received response: " + reply)
-                    if isinstance(reply, str) and reply != "":
-                        try:
-                            await message.channel.send(reply)
-                        except discord.DiscordException as e:
-                            client.logger.error("Error occurred sending message: " + str(e))
-                else:
-                    client.logger.info(f"Got back response code {r.status}")
 
 if __name__ == "__main__":
     client.logger.info("Initiating discord connection")
