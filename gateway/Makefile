@@ -35,7 +35,7 @@ run: # Spins up a container
 test: clean build
 	# Supress error if not preexisting
 	docker rm $(CONTAINER_NAME) || true
-	docker run -it --name $(CONTAINER_NAME) --log-driver local \
+	docker run --name $(CONTAINER_NAME) --log-driver local \
 		-e CONFIG_LOC=$(CONFIG_LOC) \
 		-v $(realpath $(CONFIG_LOC_EXT)):$(CONFIG_LOC) \
 		$(IMAGE_NAME) pytest
