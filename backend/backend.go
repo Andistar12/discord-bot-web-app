@@ -5,6 +5,7 @@ import (
     log "github.com/sirupsen/logrus"
     "os"
     "io/ioutil"
+    "strings"
     "encoding/json"
 )
 
@@ -38,10 +39,20 @@ func main() {
         log.Error("Error parsing config file: " + err.Error()) 
     }
 
+    // Initialize logging
+    if strings.HasPrefix(config.Target, "prod") {
+        // Production
+        gin.SetMode(gin.ReleaseMode)
+        log.SetLevel(log.InfoLevel)
+    } else {
+        // Default to dev mode
+        gin.SetMode(gin.DebugMode)
+        log.SetLevel(log.DebugLevel)
+    }
+
     // Initialize app
     log.Infof("Creating app and initializing routes")
     app = gin.Default()
-    gin.SetMode(config.Target)
     os.Setenv("PORT", config.Port)
     InitializeRoutes(app)
 
