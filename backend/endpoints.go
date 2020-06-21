@@ -19,12 +19,16 @@ func InitializeRoutes(app *gin.Engine) {
 // Command is the requested command. Should match its endpoint
 // Arguments is a string array of each arguments. Each string may or may not have spaces
 // UserID is the user snowflake of the sender of the command
+// MessageID is the id of the message itself
+// MessageChannelID is the id of the channel the message was sent on
+// IsPrivate indicates whether the channel is a private/dm or a server channel
 type CommandRequest struct {
     Command string          `json:"command"`
     Arguments []string      `json:"arguments"`
     UserID int              `json:"user_id"`
     MessageID int           `json:"message_id"`
     MessageChannelID int    `json:"message_channel_id"`
+    IsPrivate bool          `json:"is_private"`
 }
 
 // Returns as "command" an array of every available command
