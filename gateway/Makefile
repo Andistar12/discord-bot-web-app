@@ -32,6 +32,14 @@ run: # Spins up a container
 		-v $(realpath $(CONFIG_LOC_EXT)):$(CONFIG_LOC) \
 		$(IMAGE_NAME) || true
 
+test: clean build
+	# Supress error if not preexisting
+	docker rm $(CONTAINER_NAME) || true
+	docker run -it --name $(CONTAINER_NAME) --log-driver local \
+		-e CONFIG_LOC=$(CONFIG_LOC) \
+		-v $(realpath $(CONFIG_LOC_EXT)):$(CONFIG_LOC) \
+		$(IMAGE_NAME) pytest
+
 clean: # Stops the container
 	# Surpress error if not started
 	docker stop $(CONTAINER_NAME) || true
