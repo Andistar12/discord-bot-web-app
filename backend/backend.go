@@ -20,6 +20,9 @@ type Config struct {
 
 // This function initiates then runs the app
 func main() {
+
+    InitLogger("backend", "2006-01-02 15:04:05")
+
     // Open config file
     configFile, err := os.Open(os.Getenv("CONFIG_LOC"))
     if err != nil {
@@ -38,7 +41,7 @@ func main() {
     if err != nil {
         log.Error("Error parsing config file: " + err.Error()) 
     }
-
+    
     // Initialize logging
     if strings.HasPrefix(config.Target, "prod") {
         // Production
