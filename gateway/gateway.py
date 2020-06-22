@@ -74,8 +74,10 @@ async def generate_payload(message):
     For example, assuming the command prefix is '.', then the message content
         .choice first_choice "second choice" thirdChoice
     will generate the following fields in the payload:
+    {
         command: "choice"
         arguments: ["first_choice", "second choice", "thirdChoice"]
+    }
 
     If the message is of type string instead of type discord.Message, then
     the *_id fields and is_private field will be omitted
