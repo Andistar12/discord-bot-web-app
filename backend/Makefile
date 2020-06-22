@@ -48,7 +48,7 @@ test: clean build # Runs go tests
 		-e CONFIG_LOC=$(CONFIG_LOC) \
 	    -p $(EXPOSED_PORT):$(INTERNAL_PORT) \
 		-v $(realpath $(CONFIG_LOC_EXT)):$(CONFIG_LOC) \
-		$(IMAGE_NAME) go test
+		$(IMAGE_NAME) pytest
 
 clean: # Stops the container
 	# Surpress error if not started

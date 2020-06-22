@@ -1,12 +1,11 @@
-import flask
-import time
-import logging
-import sys
-from flask import Flask, request, jsonify, Response
 import json
 import os
+import time
+import sys
+import flask
+import logging
+from flask import Flask, request, jsonify, Response
 
-app = flask.Flask(__name__)
 
 try:
     CONFIG_PATH = os.environ.get("CONFIG_LOC", "config.json")
@@ -29,16 +28,41 @@ if config is not None:
         logging.error("Error: No backend address given")
         sys.exit(1)
     BACKEND_ADDR_PORT = config.get("backend_addr_port")
-    if BACKEND_PORT is None:
+    if BACKEND_ADDR_PORT is None:
         logging.error("Error: No port given")
         sys.exit(1)
+    LOGGING_LEVEL = config.get("target", None)
 
+app = flask.Flask(__name__)
 app.port = BACKEND_ADDR_PORT
+app.backend_addr = BACKEND_ADDR
 
-@app.route("/commands", methods=['GET', 'POST'])
+@app.route("/commands", methods=['GET'])
 def get_all_commands():
-    
-    return
+    response = {
+        "commands": ["ping", "repeat"]
+    }
+    return jsonify(response)
+
+@app.route("/command/ping", methods=["POST"])
+def ping():
+    response = {
+        "response": "Pong!"
+    }
+    return jsonify(response)
+
+@app.route("/command/repeat", methods=["POST"])
+def repeat():
+    args = request.json.get("arguments", [])
+    response = {
+        "response": "Specify something for me to repeat!"
+    }
+    if len(args) > 0:
+        response["response"] = " ".join(args)
+    return jsonify(response)
 
 if __name__ == '__main__':
-    app.run(port = app.port, host ="0.0.0.0", debug=True)
+    debug = False
+    if LOGGING_LEVEL == "debug" or LOGGING_LEVEL == "dev":
+        debug = True
+    app.run(port = app.port, host ="0.0.0.0", debug=debug)

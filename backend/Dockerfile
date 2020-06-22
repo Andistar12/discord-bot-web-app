@@ -1,15 +1,12 @@
-# This Dockerfile is used to build the app
-FROM golang:1.14.4 as dev
-RUN mkdir /go/src/backend
-WORKDIR /go/src/backend
-COPY go.mod .
-COPY go.sum .
-RUN go mod download
-COPY . .
-RUN CGO_ENABLED=0 GOOS=linux go build -o main .
-CMD ["./main"]
-
-FROM alpine:latest as prod
+# Basically just a Python3 + pip3 + discord.py image
+FROM python:3.7-slim as dev
+RUN pip install -Iv pytest==5.4.3 flask==1.1.2
+COPY . /app
 WORKDIR /app
-COPY --from=0 /go/src/backend/main .
-CMD ["./main"]
+CMD ["python3", "./backend.py"]
+
+FROM python:3.7-slim as prod
+RUN pip install -Iv flask=1.1.2
+COPY . /app
+WORKDIR /app
+CMD ["python3", "./backend.py"]
