@@ -167,7 +167,7 @@ async def on_message(message):
         if payload is not None:
             client.logger.debug("Command detected: " + payload["command"])
             url = "http://" + client.backend_addr + ":"
-            url += client.backend_addr_port + "/command/" + payload["command"]
+            url += client.backend_addr_port + "/command"
             reply = await get_reply(url, payload)
             response = reply["response"]
             embed = None
