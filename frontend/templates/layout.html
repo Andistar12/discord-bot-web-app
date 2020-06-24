@@ -16,13 +16,27 @@
 	</head>
 	<body>
 
-        {% if logged_in %}
-            {% include 'admin_navbar.html' %}
-        {% else %}
-            {% include 'regular_navbar.html' %}
-        {% endif %}
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <a class="navbar-brand" href="#">Discord Bot</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            {% set active_page = active_page|default('index') -%}
+          
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    {% for href, id, caption in nav_bar %}
+                        <li{% if id == active_page %} class="nav-item active"{% else %} class="nav-item" {% endif%}>
+                            <a class="nav-link" href="{{ href|e }}">{{ caption|e }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </nav>
+
         <br>
-        <div class="row justify-content-center"><div class="col-8">
+        <div class="container"><div class="row justify-content-center"><div class="col-8">
             {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     <!-- Mismatch, already found, etc. "flashed" from Python -->
@@ -36,8 +50,9 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-        </div></div>
+        </div></div></div>
         <br>
         {% block content %}{% endblock %}
+
 	</body>
 </html>

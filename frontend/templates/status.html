@@ -1,24 +1,48 @@
 {% extends "layout.html" %}
+{% set active_page = "status" %}
 {% block content %}
 
 <div class="container text-center">
-	<div class="row">
-		<div class="col-12">
-			<h1>
-				Discord Bot Web App
-			</h1>
+    <div class="row">
+        <div class="col-12">
+            <h1>
+                Korone-chan
+            </h1>
+            <p>A bot written by Eugene Tan and Andy Nguyen</p>
 		</div>
 	</div>
 	<br>
 	<div class="row">
+        <div class="col-2"></div>
 		<div class="col-4">
-			A bot written by Eugene Tan and Andy Nguyen
+            <img src="https://pbs.twimg.com/media/EQfrhmwVUAEiyvR.jpg" class="img-fluid rounded img-thumbnail">
 		</div>
-		<div class="col-8">
-			<img src="https://pbs.twimg.com/media/EQfrhmwVUAEiyvR.jpg" style="width:500px;height:500px;">
+		<div class="col-4 text-left">
+            <h3>Stat sheet</h3>
+            <p>Discord name: Korone-chan#1234</p>
+            <p>Command prefix: .</p>
+            <p>Currently status: online</p>
+            <p>Playing yubi yubi</p>
+            <p>Bot ID: 1234</p>
+            <p>Servers: 1</p>
+            <p>Backend: discord.py</p>
 		</div>
+        <div class="col-2"></div>
 	</div>
+    <br>
+    <div class="row">
+        <div class="col-12">
+            <h3>Invite her to your server!</h3>
+            <p>Basic rights (chat + voice)</p>
+            <pre>https://discordapp.com/oauth2/authorize?client_id={0}&amp;scope=bot&amp;permissions=37080128</pre>
+            <br>
+            <p>Moderator (manage messages + kick/ban)</p>
+            <pre>https://discordapp.com/oauth2/authorize?client_id={0}&amp;scope=bot&amp;permissions=37088326</pre>
+            <br>
+            <p>Complete admin (everything)
+            <pre>https://discordapp.com/oauth2/authorize?client_id={0}&amp;scope=bot&amp;permissions=8</pre>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
-{% block status %}active{% endblock %}
