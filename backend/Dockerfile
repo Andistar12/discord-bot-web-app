@@ -6,7 +6,7 @@ WORKDIR /app
 CMD ["python3", "./backend.py"]
 
 FROM python:3.7-slim as prod
-RUN pip install -Iv flask=1.1.2
+RUN pip install -Iv flask==1.1.2
 COPY . /app
 WORKDIR /app
 CMD ["python3", "./backend.py"]
