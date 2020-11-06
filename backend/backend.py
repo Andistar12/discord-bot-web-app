@@ -4,7 +4,7 @@ import time
 import sys
 import flask
 import logging
-from flask import Flask, request, jsonify, Response
+from flask import Flask, request, jsonify, Response, abort
 
 
 try:
@@ -37,6 +37,7 @@ app = flask.Flask(__name__)
 app.port = BACKEND_ADDR_PORT
 app.backend_addr = BACKEND_ADDR
 
+
 @app.route("/commands", methods=['GET'])
 def get_all_commands():
     """Endpoint that returns all commands"""
@@ -49,7 +50,18 @@ def get_all_commands():
 @app.route("/command", methods=["POST"])
 def process_command():
     """Endpoint that processes a single Discord command message"""
-    command = request.json.get("command", "")
+
+    # TODO check arguments is string array, all _id fields are long, is_private boolean 
+    payload = {
+        "command": request.form.get("command", ""),
+        "arguments": request.form.get("arguments", []),
+        "user_id": request.form.get("user_id", ""),
+        "message_id": request.form.get("message_id", ""),
+        "message_channel_id": request.form.get("message_channel_id", ""),
+        "is_private": request.form.get("is_private")
+    }
+
+    command = payload["command"]
 
     if command == "ping":
         response = {"response": "Pong!"}
@@ -57,13 +69,12 @@ def process_command():
     elif command == "pong":
         response = {"response": "Ping!"}
         return jsonify(response)
-    elif command = "repeat":
-        args = request.json.get("arguments", [])
+    elif command == "repeat":
         response = {
             "response": "Specify something for me to repeat!"
         }
-        if len(args) > 0:
-            response["response"] = " ".join(args)
+        if len(payload["arguments"]) > 0:
+            response["response"] = " ".join(payload["arguments"])
         return jsonify(response)
 
     abort(404)
