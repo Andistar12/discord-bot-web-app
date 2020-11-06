@@ -77,7 +77,9 @@ def process_command():
             response["response"] = " ".join(payload["arguments"])
         return jsonify(response)
 
-    abort(204) # this means No Content, we processed the command and return nothing
+    # 204 means No Content, we processed the command and return nothing
+    return Response("{}", status=204)
+
 
 if __name__ == '__main__':
     debug = False

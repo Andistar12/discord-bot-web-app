@@ -9,6 +9,10 @@ from backend import app as backend_app
 def client():
     return backend_app.test_client()
 
+def test_bad_command(client):
+    response = client.post("/command")
+    assert response.status_code == 204
+
 def test_ping(client):
     data = {
         "command": "ping",
