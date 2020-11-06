@@ -77,8 +77,7 @@ def process_command():
             response["response"] = " ".join(payload["arguments"])
         return jsonify(response)
 
-    # 204 means No Content, we processed the command and return nothing
-    return Response("{}", status=204)
+    return jsonify({"response": ""})
 
 
 if __name__ == '__main__':

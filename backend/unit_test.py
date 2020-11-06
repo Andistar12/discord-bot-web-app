@@ -11,7 +11,8 @@ def client():
 
 def test_bad_command(client):
     response = client.post("/command")
-    assert response.status_code == 204
+    assert response.status_code == 200
+    assert response.json["response"] == ""
 
 def test_ping(client):
     data = {
