@@ -146,6 +146,8 @@ async def get_reply(url: str, payload: dict):
                 reply["response"] = js.get("response", "")
                 reply["embed"] = js.get("embed", "")
                 client.logger.debug(f"Received reply from backend: {reply}")
+            elif r.status == 204: # No command, swallow
+                pass
             else:
                 delta = (time.perf_counter() - start) * 1000
                 client.logger.info(f"Got back response code {r.status} in {delta} ms")
