@@ -39,27 +39,34 @@ app.backend_addr = BACKEND_ADDR
 
 @app.route("/commands", methods=['GET'])
 def get_all_commands():
+    """Endpoint that returns all commands"""
     response = {
         "commands": ["ping", "repeat"]
     }
     return jsonify(response)
 
-@app.route("/command/ping", methods=["POST"])
-def ping():
-    response = {
-        "response": "Pong!"
-    }
-    return jsonify(response)
 
-@app.route("/command/repeat", methods=["POST"])
-def repeat():
-    args = request.json.get("arguments", [])
-    response = {
-        "response": "Specify something for me to repeat!"
-    }
-    if len(args) > 0:
-        response["response"] = " ".join(args)
-    return jsonify(response)
+@app.route("/command", methods=["POST"])
+def process_command():
+    """Endpoint that processes a single Discord command message"""
+    command = request.json.get("command", "")
+
+    if command == "ping":
+        response = {"response": "Pong!"}
+        return jsonify(response)
+    elif command == "pong":
+        response = {"response": "Ping!"}
+        return jsonify(response)
+    elif command = "repeat":
+        args = request.json.get("arguments", [])
+        response = {
+            "response": "Specify something for me to repeat!"
+        }
+        if len(args) > 0:
+            response["response"] = " ".join(args)
+        return jsonify(response)
+
+    abort(404)
 
 if __name__ == '__main__':
     debug = False

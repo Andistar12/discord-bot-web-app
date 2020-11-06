@@ -14,7 +14,7 @@ def test_ping(client):
         "command": "ping",
         "arguments": []
     }
-    response = client.post("/command/ping", data=json.dumps(data))
+    response = client.post("/command", data=data)
     assert response.status_code == 200
     assert response.json["response"] == "Pong!"
 
