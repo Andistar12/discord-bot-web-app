@@ -7,4 +7,4 @@ WORKDIR /app
 CMD ["python3", "frontend.py"]
 
 FROM dev as prod
-CMD ["gunicorn", "--bind", "0.0.0.0:1357", "wsgi:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:8080", "wsgi:app"]
