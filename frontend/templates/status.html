@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% set active_page = "status" %}
+{% block content %}
+
+<div class="container text-center">
+    <div class="row">
+        <div class="col-12">
+            <h1>
+                {{ username }}
+            </h1>
+            <p>A discord.py bot by Andy Nguyen and Eugene Tan</p>
+		</div>
+	</div>
+	<br>
+	<div class="row">
+        <div class="col-4"></div>
+		<div class="col-4">
+            <img src="{{ avatar }}" class="img-fluid rounded img-thumbnail">
+		</div>
+        <div class="col-4"></div>
+	</div>
+    <br><br>
+    <div class="row">
+        <div class="col-12">
+            <h3>Invite this bot to your server!</h3>
+            <p>Basic rights (chat + voice)</p>
+            <pre>https://discord.com/oauth2/authorize?client_id={{ client_id }}&amp;scope=bot&amp;permissions=37080128</pre>
+            <br>
+            <p>Moderator (manage messages + kick/ban)</p>
+            <pre>https://discord.com/oauth2/authorize?client_id={{ client_id }}&amp;scope=bot&amp;permissions=37088326</pre>
+            <br>
+            <p>Complete admin (everything)
+            <pre>https://discord.com/oauth2/authorize?client_id={{ client_id }}&amp;scope=bot&amp;permissions=8</pre>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

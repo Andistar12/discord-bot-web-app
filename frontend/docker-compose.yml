@@ -1,0 +1,19 @@
+version: '3.6'
+
+services:
+    frontend:
+        build:
+            context: .
+            target: dev
+        container_name: frontend
+        environment:
+            - CONFIG_LOC=/run/secrets/config
+        volumes:
+            - ../config.json:/run/secrets/config
+            - .:/app
+        ports:
+            - 8080:8080
+    redis:
+        image: redis:6.0-alpine
+        ports:
+            - 6379:6379
