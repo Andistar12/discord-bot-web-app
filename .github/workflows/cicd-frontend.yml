@@ -39,7 +39,7 @@ jobs:
               with:
                 webhook: ${{ secrets.DISCORD_WEBHOOK }}
                 status: ${{ job.status }}
-                title: "build and push gateway image"
+                title: "build and push frontend image"
                 nofail: true
                 nodetail: false
                 color: 0x2d7daa
