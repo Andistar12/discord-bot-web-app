@@ -21,3 +21,18 @@ services:
             - 2468:2468
         volumes:
             - ./config.json:/run/secrets/config
+    frontend:
+        build:
+            context: frontend/
+            target: dev
+        container_name: dc-frontend
+        environment:
+            - CONFIG_LOC=/run/secrets/config
+        volumes:
+            - ./config.json:/run/secrets/config
+        ports:
+            - 8080:8080
+    redis:
+        image: redis:6.0-alpine
+        ports:
+            - 6379:6379

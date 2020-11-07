@@ -28,7 +28,7 @@
                 <ul class="navbar-nav mr-auto">
                     {% for href, id, caption in nav_bar %}
                         <li{% if id == active_page %} class="nav-item active"{% else %} class="nav-item" {% endif%}>
-                            <a class="nav-link" href="{{ href|e }}">{{ caption|e }}</a>
+                            <a class="nav-link" href="{{ href|e }}">{{ caption|safe }}</a>
                         </li>
                     {% endfor %}
                 </ul>
@@ -36,12 +36,12 @@
         </nav>
 
         <br>
-        <div class="container"><div class="row justify-content-center"><div class="col-8">
-            {% with messages = get_flashed_messages() %}
+        <div class="container"><div class="row justify-content-center"><div class="col-12">
+            {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     <!-- Mismatch, already found, etc. "flashed" from Python -->
-                    {% for message in messages %}
-                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
                             {{ message }}
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
