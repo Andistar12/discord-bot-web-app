@@ -51,17 +51,21 @@ def get_all_commands():
 def process_command():
     """Endpoint that processes a single Discord command message"""
 
+    if request.json == None:
+        return "Not JSON", 400
+
     # TODO check arguments is string array, all _id fields are long, is_private boolean 
     payload = {
-        "command": request.form.get("command", ""),
-        "arguments": request.form.get("arguments", []),
-        "user_id": request.form.get("user_id", ""),
-        "message_id": request.form.get("message_id", ""),
-        "message_channel_id": request.form.get("message_channel_id", ""),
-        "is_private": request.form.get("is_private")
+        "command": request.json.get("command", ""),
+        "arguments": request.json.get("arguments", []),
+        "user_id": request.json.get("user_id", ""),
+        "message_id": request.json.get("message_id", ""),
+        "message_channel_id": request.json.get("message_channel_id", ""),
+        "is_private": request.json.get("is_private")
     }
 
     command = payload["command"]
+    app.logger.debug("Processing command: " + command)
 
     if command == "ping":
         response = {"response": "Pong!"}
@@ -77,7 +81,7 @@ def process_command():
             response["response"] = " ".join(payload["arguments"])
         return jsonify(response)
 
-    return jsonify({"response": ""})
+    return "", 204 # 204 is No Conent, we use it to indicate no command
 
 
 if __name__ == '__main__':
