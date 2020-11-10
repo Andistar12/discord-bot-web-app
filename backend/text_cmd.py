@@ -11,10 +11,10 @@ class TEXT:
         pass
 
     def pong(self, arguments):
-        return {"response":"I say Ping!"}
+        return {"response":"Ping!"}
     
     def ping(self, arguments):
-        return {"response":"I say Pong!"}
+        return {"response":"Pong!"}
     
     def repeat(self, arguments):
         response = {
