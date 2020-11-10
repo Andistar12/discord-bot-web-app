@@ -5,6 +5,7 @@ import sys
 import flask
 import logging
 from flask import Flask, request, jsonify, Response, abort
+import commands
 
 
 try:
@@ -67,12 +68,21 @@ def process_command():
     command = payload["command"]
     app.logger.debug("Processing command: " + command)
 
+    
+    cmd = commands.COMMAND(command)
+    
     if command == "ping":
         response = {"response": "Pong!"}
         return jsonify(response)
+    # elif command == "lookup" and len(payload["arguments"]) > 0:
+    #     arguments = payload["arguments"]
+    #     c = commands.COMMAND(arguments[0])
+    #     b = c.lookup()
+        
+    #     response = {"response": b}
+    #     return jsonify(response)
     elif command == "pong":
-        response = {"response": "Ping!"}
-        return jsonify(response)
+        return cmd.pong()
     elif command == "repeat":
         response = {
             "response": "Specify something for me to repeat!"
@@ -85,6 +95,7 @@ def process_command():
 
 
 if __name__ == '__main__':
+    botb = commands.BOT()
     debug = False
     if LOGGING_LEVEL == "debug" or LOGGING_LEVEL == "dev":
         debug = True
