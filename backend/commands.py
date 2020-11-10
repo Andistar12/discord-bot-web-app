@@ -9,7 +9,7 @@ class BOT:
     def __init__(self):
         self.text_cmd = text_cmd.TEXT()
         self.start_time = time.time()
-        self.LOOK_UP = {"ping": self.text_cmd.ping, "pong": self.text_cmd.pong, "repeat": self.text_cmd.repeat}
+        self.LOOK_UP = {"ping": self.text_cmd.ping, "pong": self.text_cmd.pong, "repeat": self.text_cmd.repeat, "eightball": self.text_cmd.eight_ball}
 
     def getUptime(self):
         return time.time() - self.start_time
@@ -32,11 +32,6 @@ class COMMAND(BOT):
         else:
             return "", 204
 
-    # def pong(self):
-    #     return self.LOOK_UP["pong"](self.arguments)
-    
-    # def repeat(self):
-    #     return self.LOOK_UP["repeat"](self.arguments)
 
     
 
