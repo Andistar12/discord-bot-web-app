@@ -55,7 +55,6 @@ def process_command():
     if request.json == None:
         return "Not JSON", 400
 
-    # TODO check arguments is string array, all _id fields are long, is_private boolean 
     payload = {
         "command": request.json.get("command", ""),
         "arguments": request.json.get("arguments", []),
@@ -67,25 +66,10 @@ def process_command():
 
     command = payload["command"]
     app.logger.debug("Processing command: " + command)
+    arguments = payload["arguments"]
 
-
-    cmd = commands.COMMAND(command)
-    
-    if command == "ping":
-        response = {"response": "Pong!"}
-        return jsonify(response)
-
-    elif command == "pong":
-        return cmd.pong()
-    elif command == "repeat":
-        response = {
-            "response": "Specify something for me to repeat!"
-        }
-        if len(payload["arguments"]) > 0:
-            response["response"] = " ".join(payload["arguments"])
-        return jsonify(response)
-
-    return "", 204 # 204 is No Conent, we use it to indicate no command
+    cmd = commands.COMMAND(command, arguments)
+    return cmd.execute()
 
 
 if __name__ == '__main__':
