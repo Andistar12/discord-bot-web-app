@@ -68,19 +68,13 @@ def process_command():
     command = payload["command"]
     app.logger.debug("Processing command: " + command)
 
-    
+
     cmd = commands.COMMAND(command)
     
     if command == "ping":
         response = {"response": "Pong!"}
         return jsonify(response)
-    # elif command == "lookup" and len(payload["arguments"]) > 0:
-    #     arguments = payload["arguments"]
-    #     c = commands.COMMAND(arguments[0])
-    #     b = c.lookup()
-        
-    #     response = {"response": b}
-    #     return jsonify(response)
+
     elif command == "pong":
         return cmd.pong()
     elif command == "repeat":
