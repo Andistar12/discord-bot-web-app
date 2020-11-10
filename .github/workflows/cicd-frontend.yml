@@ -1,0 +1,47 @@
+name: frontend
+
+on:
+    push:
+        paths:
+            - "frontend/**"
+            - ".github/workflows/cicd-frontend.yml"
+
+jobs:
+    build-frontend:
+        runs-on: ubuntu-latest
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v2
+
+            - name: "Install config"
+              env:
+                CONFIG_FILE: ${{ secrets.CONFIG_FILE }}
+              run: echo "$CONFIG_FILE" > config.json
+
+            - name: "Build prod image"
+              run: docker build -t ${{ secrets.FRONTEND_PROD_TAG }} --target prod frontend/
+            
+            - name: "Login to google cloud"
+              uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+              with:
+                version: "270.0.0"
+                service_account_key: ${{ secrets.GCLOUD_KEY }}
+            
+            - name: "Login to docker"
+              run: gcloud auth configure-docker
+            
+            - name: "Push to docker registry"
+              run: docker push ${{ secrets.FRONTEND_PROD_TAG }}
+
+            - name: "Notify discord"
+              uses: sarisia/actions-status-discord@v1
+              if: ${{ always() }}
+              with:
+                webhook: ${{ secrets.DISCORD_WEBHOOK }}
+                status: ${{ job.status }}
+                title: "build and push frontend image"
+                nofail: true
+                nodetail: false
+                color: 0x2d7daa
+                username: GitHub Actions
+                avatar_url: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
