@@ -4,13 +4,14 @@ import commands
 import json
 import sys
 import random
+from backend import *
+import datetime
 import os
 
 class TEXT:
     def __init__(self):
-        super().__init__()
         pass
-
+        
     def pong(self, arguments):
         return {"response":"Ping!"}
     
@@ -32,3 +33,12 @@ class TEXT:
         resp = random.randint(0, len(responses))
         response = {"response": responses[resp]}
         return jsonify(response)
+
+    def uptime(self, arguments=None):
+        delta = datetime.datetime.now() - start_time
+        days = delta.days
+        hours, seconds = divmod(delta.seconds, 3600)
+        minutes, seconds = divmod(seconds, 60)
+
+        duration = "{0} days, {1} hours, {2} minutes, and {3} seconds".format(days, hours, minutes, seconds)
+        return {"response": duration}
