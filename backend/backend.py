@@ -4,9 +4,12 @@ import time
 import sys
 import flask
 import logging
+import datetime
 from flask import Flask, request, jsonify, Response, abort
 import commands
 
+global start_time
+start_time = datetime.datetime.now()
 
 try:
     CONFIG_PATH = os.environ.get("CONFIG_LOC", "config.json")
@@ -43,7 +46,7 @@ app.backend_addr = BACKEND_ADDR
 def get_all_commands():
     """Endpoint that returns all commands"""
     response = {
-        "commands": ["ping", "repeat"]
+        "commands": ["pong","ping", "repeat", "eightball"]
     }
     return jsonify(response)
 
@@ -69,6 +72,14 @@ def process_command():
     arguments = payload["arguments"]
 
     cmd = commands.COMMAND(command, arguments)
+    # if command == "uptime":
+    #     delta = datetime.datetime.now() - botb.start_time
+    #     days = delta.days
+    #     hours, seconds = divmod(delta.seconds, 3600)
+    #     minutes, seconds = divmod(seconds, 60)
+
+    #     duration = "{0} days, {1} hours, {2} minutes, and {3} seconds".format(days, hours, minutes, seconds)
+    #     return {"response": duration}
     return cmd.execute()
 
 
