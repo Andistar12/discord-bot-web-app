@@ -66,12 +66,16 @@ def process_command():
         "message_channel_id": request.json.get("message_channel_id", ""),
         "is_private": request.json.get("is_private")
     }
+    app.logger.debug("Processing command: " + payload["command"])
 
     command = payload["command"]
-    app.logger.debug("Processing command: " + command)
     arguments = payload["arguments"]
+    usid = payload["user_id"]
+    msgid = payload["message_id"]
+    msgch_id = payload["message_channel_id"]
+    priv = payload["is_private"]
 
-    cmd = commands.COMMAND(command, arguments)
+    cmd = commands.COMMAND(command, arguments, usid, msgid, msgch_id, priv)
     # if command == "uptime":
     #     delta = datetime.datetime.now() - botb.start_time
     #     days = delta.days
