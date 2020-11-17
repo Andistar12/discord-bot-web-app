@@ -26,15 +26,17 @@ class COMMAND(BOT):
         self.pack = {"command": self.command, "arguments": self.arguments, "user_id": self.user_id, "message_id": self.message_id, "message_channel_id": self.message_ch_id,
                 "is_private": self.is_priv}
 
-    def lookup(self):
-        if self.LOOK_UP[self.command]:
+    def lookup(self, cmd):
+        if cmd in self.LOOK_UP.keys():
             return True
         else:
             return False
 
     def execute(self):
-        if self.lookup():
+        if self.lookup(self.command):
             return self.LOOK_UP[self.command](self.arguments, self.pack)
+        elif self.lookup(self.command) == False:
+            return {"response": "Invalid command supplied"}
         else:
             return "", 204
     
