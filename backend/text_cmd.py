@@ -13,10 +13,12 @@ class TEXT:
         pass
         
     def pong(self, arguments, pack):
-        return {"response":"Ping!"}
+        val = {"response":"Ping!"}
+        return jsonify(val)
     
     def ping(self, arguments, pack):
-        return {"response":"Pong!"}
+        val = {"response":"Pong!"}
+        return jsonify(val)
     
     def repeat(self, arguments, pack):
         response = {
@@ -56,3 +58,29 @@ class TEXT:
             return {"response": "<@{0}> Heads".format(user_id)}
         else:
             return {"response": "<@{0}> Tails".format(user_id)}
+    
+    def randomcase(self, arguments, pack):
+        if not arguments:
+            return {"response": "Nothing for me to case :("}
+        
+        val = ""
+        
+        for i in arguments:
+            val += i
+            val += " "
+        val.strip()
+
+        funs = [0, 1]
+        retstr = ""
+
+        
+        for v,i in enumerate(val):
+            if i.isalpha():
+                choice = random.choice(funs)
+                if choice:
+                    retstr += i.upper()
+                else:
+                    retstr += i.lower()
+            else:
+                retstr += i
+        return {"response": retstr}
