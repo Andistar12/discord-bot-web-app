@@ -76,14 +76,7 @@ def process_command():
     priv = payload["is_private"]
 
     cmd = commands.COMMAND(command, arguments, usid, msgid, msgch_id, priv)
-    # if command == "uptime":
-    #     delta = datetime.datetime.now() - botb.start_time
-    #     days = delta.days
-    #     hours, seconds = divmod(delta.seconds, 3600)
-    #     minutes, seconds = divmod(seconds, 60)
 
-    #     duration = "{0} days, {1} hours, {2} minutes, and {3} seconds".format(days, hours, minutes, seconds)
-    #     return {"response": duration}
     return cmd.execute()
 
 
