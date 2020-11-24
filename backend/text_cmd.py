@@ -87,7 +87,7 @@ class TEXT:
     def maximize(self, arguments, pack):
         if not arguments:
             return {"response": "Nothing to maximize."}
-        originalarg = arguments[0]
+        originalarg = ""
         for i in arguments:
             originalarg += i
             originalarg += " "
