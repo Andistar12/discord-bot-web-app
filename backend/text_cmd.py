@@ -88,8 +88,11 @@ class TEXT:
         if not arguments:
             return {"response": "Nothing to maximize."}
         originalarg = arguments[0]
+        for i in arguments:
+            originalarg += i
+            originalarg += " "
 
-        valstr = "" + originalarg
+        valstr = originalarg
         while len(valstr) <= (2000 - len(originalarg)):
             valstr += originalarg
             valstr += " "
@@ -101,8 +104,11 @@ class TEXT:
     def reverse(self, arguments, pack):
         if not arguments:
             return {"response": "Nothing to reverse."}
-        
-        revers = arguments[0][::-1]
+        v = ""
+        for i in arguments:
+            v += i
+            v += " "
+        revers = v[::-1]
         return {"response": revers}
 
     def gift(self, arguments, pack):
