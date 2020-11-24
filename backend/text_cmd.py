@@ -73,7 +73,6 @@ class TEXT:
         funs = [0, 1]
         retstr = ""
 
-        
         for v,i in enumerate(val):
             if i.isalpha():
                 choice = random.choice(funs)
@@ -84,3 +83,42 @@ class TEXT:
             else:
                 retstr += i
         return {"response": retstr}
+    
+    def maximize(self, arguments, pack):
+        if not arguments:
+            return {"response": "Nothing to maximize."}
+        originalarg = arguments[0]
+
+        valstr = "" + originalarg
+        while len(valstr) <= (2000 - len(originalarg)):
+            valstr += originalarg
+            valstr += " "
+        if len(valstr) < 2000:
+            difference = 2000 - len(valstr)
+            valstr += originalarg[0:difference]
+        return {"response": valstr}
+    
+    def reverse(self, arguments, pack):
+        if not arguments:
+            return {"response": "Nothing to reverse."}
+        
+        revers = arguments[0][::-1]
+        return {"response": revers}
+
+    def gift(self, arguments, pack):
+        if not arguments:
+            return {"response": "Nobody to gift."}
+        user_id = arguments[0]
+
+        length = len(arguments)
+        choices = arguments[1:]
+        res = random.choice(choices)
+
+        return {"response": "{0}, you just received a gift: a {1}".format(user_id, res)}
+ 
+    def dice(self, arguments, pack):
+        if not arguments:
+            return {"response": "No number passed."}
+        num_dice = arguments[0]
+        
+        

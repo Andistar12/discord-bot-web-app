@@ -10,7 +10,8 @@ class BOT:
         self.text_cmd = text_cmd.TEXT()
         self.start_time = datetime.datetime.now()
         self.LOOK_UP = {"ping": self.text_cmd.ping, "pong": self.text_cmd.pong, "repeat": self.text_cmd.repeat, "eightball": self.text_cmd.eight_ball, 
-                        "uptime": self.text_cmd.uptime, "choice": self.text_cmd.choice, "coinflip": self.text_cmd.coinflip, "randomcase": self.text_cmd.randomcase}
+                        "uptime": self.text_cmd.uptime, "choice": self.text_cmd.choice, "coinflip": self.text_cmd.coinflip, "randomcase": self.text_cmd.randomcase,
+                        "maximize": self.text_cmd.maximize, "reverse": self.text_cmd.reverse, "gift": self.text_cmd.gift, "dice": self.text_cmd.dice}
 
 
 
