@@ -18,9 +18,6 @@ jobs:
                 CONFIG_FILE: ${{ secrets.CONFIG_FILE }}
               run: echo "$CONFIG_FILE" > config.json
 
-            - name: "Run unit tests"
-              run: make --directory gateway/ test
-
             - name: "Build prod image"
               run: docker build -t ${{ secrets.GATEWAY_PROD_TAG }} --target prod gateway/
             
