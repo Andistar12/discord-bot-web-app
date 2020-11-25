@@ -10,17 +10,6 @@ services:
             - CONFIG_LOC=/run/secrets/config
         volumes:
             - ./config.json:/run/secrets/config
-    backend:
-        build: 
-            context: backend/
-            target: dev
-        container_name: dc-backend
-        environment:
-            - CONFIG_LOC=/run/secrets/config
-        ports:
-            - 2468:2468
-        volumes:
-            - ./config.json:/run/secrets/config
     frontend:
         build:
             context: frontend/

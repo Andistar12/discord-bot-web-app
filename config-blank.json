@@ -1,7 +1,0 @@
-{
-    "bot_token": "",
-    "command_prefix": ".",
-    "backend_addr": "backend",
-    "backend_addr_port": "2468",
-    "target": "debug"
-}
