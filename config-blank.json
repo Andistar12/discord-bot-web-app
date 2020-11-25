@@ -1,0 +1,12 @@
+{
+    "bot_token": "",
+    "command_prefix": "",
+    "target": "",
+    "riot_token": "",
+    "discord_client_id": "",
+    "discord_client_secret": "",
+    "frontend_port": "",
+    "redis_addr": "",
+    "redis_port": "",
+    "admin_list": ""
+}
